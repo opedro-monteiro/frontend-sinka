@@ -7,12 +7,12 @@ import z from 'zod'
 import GitHubIcon from './icons/github'
 import GoogleIcon from './icons/google'
 import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
 } from './ui/form'
 
 export function LoginForm() {
