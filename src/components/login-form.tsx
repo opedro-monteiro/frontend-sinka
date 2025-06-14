@@ -1,9 +1,9 @@
 'use client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { LoginFormData, loginFormSchema } from '@/types/schemas/login-schema'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
-import z from 'zod'
 import GitHubIcon from './icons/github'
 import GoogleIcon from './icons/google'
 import {
@@ -16,15 +16,7 @@ import {
 } from './ui/form'
 
 export function LoginForm() {
-  const loginFormSchema = z.object({
-    email: z
-      .string()
-      .email({ message: 'Email inválido' })
-      .min(1, { message: 'Email é obrigatório' }),
-    password: z.string().min(1, { message: 'Senha é obrigatória' }),
-  })
-
-  const form = useForm<z.infer<typeof loginFormSchema>>({
+  const form = useForm<LoginFormData>({
     resolver: zodResolver(loginFormSchema),
     defaultValues: {
       email: '',
@@ -32,7 +24,7 @@ export function LoginForm() {
     },
   })
 
-  function onSubmit(values: z.infer<typeof loginFormSchema>) {
+  function onSubmit(values: LoginFormData) {
     console.log(values)
   }
 
@@ -99,7 +91,10 @@ export function LoginForm() {
         </div>
         <div className="text-center text-sm">
           Não tem uma conta?{' '}
-          <a href="#" className="underline underline-offset-4">
+          <a
+            href="/create-organization"
+            className="underline underline-offset-4"
+          >
             Cadastre-se
           </a>
         </div>
