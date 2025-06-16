@@ -14,6 +14,7 @@ import { ArrowLeft, ArrowRight, Building2 } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import { toast } from 'sonner'
 
 export default function CreateOrganizationPage() {
   const router = useRouter()
@@ -90,7 +91,9 @@ export default function CreateOrganizationPage() {
       await new Promise((resolve) => setTimeout(resolve, 2000))
       router.push('/login?organization=created')
     } catch (error) {
-      console.error('Erro ao criar organização:', error)
+      toast.error(
+        error instanceof Error ? error.message : 'Erro ao criar organização',
+      )
     } finally {
       setIsLoading(false)
     }

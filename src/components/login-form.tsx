@@ -1,9 +1,15 @@
 'use client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { createSession } from '@/lib/session'
+import { Role } from '@/lib/type'
+import { login } from '@/services/auth-service'
 import { LoginFormData, loginFormSchema } from '@/types/schemas/login-schema'
 import { zodResolver } from '@hookform/resolvers/zod'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 import GitHubIcon from './icons/github'
 import GoogleIcon from './icons/google'
 import {
@@ -16,6 +22,8 @@ import {
 } from './ui/form'
 
 export function LoginForm() {
+  const router = useRouter()
+
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginFormSchema),
     defaultValues: {
@@ -24,8 +32,31 @@ export function LoginForm() {
     },
   })
 
-  function onSubmit(values: LoginFormData) {
-    console.log(values)
+  async function onSubmit(values: LoginFormData) {
+    try {
+      const result = await login(values)
+
+      await createSession({
+        user: {
+          id: result.user.id,
+          name: result.user.name,
+          email: result.user.email,
+          role: result.user.role as Role,
+          tenantId: result.user.tenantId,
+        },
+        accessToken: result.accessToken,
+        refreshToken: result.refreshToken,
+      })
+
+      toast.success('Login realizado com sucesso!')
+      router.push('/dashboard')
+    } catch (error) {
+      if (error instanceof Error) {
+        toast.error('Erro ao realizar login: ' + error.message)
+        return { message: error.message }
+      }
+      return { message: 'Erro desconhecido. Tente novamente.' }
+    }
   }
 
   return (
@@ -80,13 +111,23 @@ export function LoginForm() {
               Ou continue com
             </span>
           </div>
-          <Button variant="outline" className="w-full">
-            <GitHubIcon />
-            Entrar com GitHub
+          <Button type="button" variant="outline" className="w-full">
+            <Link
+              href={`${process.env.NEXT_PUBLIC_BASE_URL}/auth/github/login`}
+              className="flex items-center gap-2"
+            >
+              <GitHubIcon />
+              Entrar com GitHub
+            </Link>
           </Button>
-          <Button variant="outline" className="w-full">
-            <GoogleIcon />
-            Entrar com Google
+          <Button type="button" variant="outline" className="w-full" asChild>
+            <Link
+              href={`${process.env.NEXT_PUBLIC_BASE_URL}/auth/google/login`}
+              className="flex items-center gap-2"
+            >
+              <GoogleIcon />
+              Entrar com Google
+            </Link>
           </Button>
         </div>
         <div className="text-center text-sm">
