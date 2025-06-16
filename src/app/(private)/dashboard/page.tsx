@@ -1,4 +1,3 @@
-'use client'
 import { AppSidebar } from '@/components/dashboard/app-sidebar'
 import { CostumerBarChart } from '@/components/dashboard/costumer-bar-chart'
 import { CostumerPieChart } from '@/components/dashboard/costumers-pie-chart'
@@ -6,8 +5,13 @@ import { DataTableCostumers } from '@/components/dashboard/data-table'
 import { SectionCards } from '@/components/dashboard/section-cards'
 import { SiteHeader } from '@/components/dashboard/site-header'
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
+import { getSession } from '@/lib/session'
+import { redirect } from 'next/navigation'
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const session = await getSession()
+  if (!session || !session.user) redirect('/login')
+
   return (
     <SidebarProvider
       style={
@@ -22,8 +26,10 @@ export default function DashboardPage() {
         <SiteHeader />
         <div className="flex flex-1 flex-col">
           <div className="@container/main flex flex-1 flex-col gap-2">
-            <div className="flex flex-col gap-2 px-4 lg:px-6">
-              <h1></h1>
+            <div className="mt-2 flex flex-col px-4 lg:px-6">
+              <h1>
+                Olá, <strong>{session.user.name}</strong>
+              </h1>
               <p className="text-muted-foreground">
                 Bem-vindo ao painel de controle da Sinka!
               </p>

@@ -1,4 +1,4 @@
-import { AuthProvider } from '@/context/auth-context'
+import { Toaster } from '@/components/ui/sonner'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
@@ -21,7 +21,8 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <body className={`${interSans.variable} antialiased`}>
-        <AuthProvider>{children}</AuthProvider>
+        {children}
+        <Toaster richColors position="top-left" />
       </body>
     </html>
   )
