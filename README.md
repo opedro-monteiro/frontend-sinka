@@ -1,36 +1,310 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🏢 Multi-Tenant CRM API - NestJS ![Status](https://img.shields.io/badge/status-em%20desenvolvimento-yellow)
 
-## Getting Started
+API para gerenciamento de clientes e usuários em múltiplos tenants (empresas), com autenticação JWT, OAuth2 (Google) e RBAC (Role-Based Access Control).
+## 🚀 Tecnologias
 
-First, run the development server:
+![Tecnologias](https://skillicons.dev/icons?i=typescript,nestjs,nodejs,postgres,docker,prisma)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+---
+
+## 🧠 Sobre o Projeto
+
+Este projeto foi desenvolvido como desafio técnico e tem como objetivo oferecer uma API robusta para múltiplas empresas, onde cada tenant possui seus próprios dados isolados.
+
+O backend oferece:
+
+* Multitenancy
+* Autenticação JWT e Google OAuth2
+* Controle de acesso por papéis (ADMIN, USER, GUEST)
+* CRUD de Clientes
+* Deploy via Docker e Render
+
+---
+
+## 🎯 Funcionalidades
+
+* 🔐 **Autenticação**
+
+  * Login via Email/Senha (JWT + Refresh Token)
+  * Login via Google (OAuth2)
+* 🏢 **Multitenancy**
+
+  * Cada tenant possui usuários e clientes isolados
+* 🔑 **RBAC (Controle de Acesso)**
+
+  * ADMIN → Gerencia usuários e clientes
+  * USER → Gerencia apenas clientes
+  * GUEST → Visualiza clientes
+* 📇 **CRUD Completo de Clientes**
+* 📊 **Dashboard**
+
+  * KPIs de clientes ativos e totais
+* 🚢 **Dockerização e Deploy**
+
+  * Deploy simplificado via Docker e Render
+
+---
+
+## 🔗 Índice
+
+- [🏢 Multi-Tenant CRM API - NestJS ](#-multi-tenant-crm-api---nestjs-)
+  - [🚀 Tecnologias](#-tecnologias)
+  - [🧠 Sobre o Projeto](#-sobre-o-projeto)
+  - [🎯 Funcionalidades](#-funcionalidades)
+  - [🔗 Índice](#-índice)
+  - [🗺️ Estrutura de Dados](#️-estrutura-de-dados)
+    - [🔗 **Modelo Cliente**](#-modelo-cliente)
+    - [🔗 **Modelo Usuário**](#-modelo-usuário)
+  - [⚙️ Instalação e Execução Local](#️-instalação-e-execução-local)
+    - [1. Clone o repositório](#1-clone-o-repositório)
+    - [2. Instale as dependências](#2-instale-as-dependências)
+    - [3. Configure as variáveis de ambiente](#3-configure-as-variáveis-de-ambiente)
+    - [4. Suba o banco com Docker](#4-suba-o-banco-com-docker)
+    - [5. Rode as migrações do Prisma](#5-rode-as-migrações-do-prisma)
+    - [6. Rode o projeto localmente](#6-rode-o-projeto-localmente)
+  - [☁️ Deploy com Docker Hub e Render](#️-deploy-com-docker-hub-e-render)
+    - [🔧 Build da imagem](#-build-da-imagem)
+    - [🔗 Logar no Docker Hub](#-logar-no-docker-hub)
+    - [🏷️ Taguear a imagem](#️-taguear-a-imagem)
+    - [📤 Subir para o Docker Hub](#-subir-para-o-docker-hub)
+    - [🚀 No Render](#-no-render)
+  - [🔐 Payload do Token JWT](#-payload-do-token-jwt)
+  - [🧩 Relação entre Tenant, Usuário e Cliente](#-relação-entre-tenant-usuário-e-cliente)
+  - [📜 Exemplos de Dados](#-exemplos-de-dados)
+    - [🔑 Usuário de Teste](#-usuário-de-teste)
+    - [🔐 Exemplo de Token](#-exemplo-de-token)
+    - [🏢 Exemplo de Cliente](#-exemplo-de-cliente)
+  - [🧭 Cronograma Estimado](#-cronograma-estimado)
+  - [📸 Imagens](#-imagens)
+  - [](#)
+  - [📞 Contato](#-contato)
+
+---
+
+## 🗺️ Estrutura de Dados
+
+### 🔗 **Modelo Cliente**
+
+```ts
+{
+  id: string (UUID)
+  tenantId: string
+  publicId: string
+  name: string
+  email: string
+  isActive: boolean
+  contact: string
+  imageUrl: string
+  address: {
+    street: string
+    neighborhood: string
+    number: string
+    state: string
+  }
+  createdAt: Date
+  updatedAt: Date
+}
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 🔗 **Modelo Usuário**
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```ts
+{
+  id: string (UUID)
+  tenantId: string
+  name: string
+  email: string
+  password: string
+  refreshToken: string
+  role: 'ADMIN' | 'USER' | 'GUEST'
+  createdAt: Date
+  updatedAt: Date
+}
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## ⚙️ Instalação e Execução Local
 
-To learn more about Next.js, take a look at the following resources:
+### 1. Clone o repositório
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+git clone https://github.com/SEU_USUARIO/seu-projeto.git
+cd seu-projeto
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 2. Instale as dependências
 
-## Deploy on Vercel
+```bash
+npm install
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 3. Configure as variáveis de ambiente
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Crie um arquivo `.env` baseado no `.env.example` com suas credenciais:
+
+```
+DATABASE_URL=
+JWT_SECRET=
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+```
+
+### 4. Suba o banco com Docker
+
+```bash
+docker-compose up -d
+```
+
+### 5. Rode as migrações do Prisma
+
+```bash
+npx prisma migrate dev
+```
+
+### 6. Rode o projeto localmente
+
+```bash
+npm run start:dev
+```
+
+API rodando em `http://localhost:3000`
+
+---
+
+## ☁️ Deploy com Docker Hub e Render
+
+### 🔧 Build da imagem
+
+```bash
+docker build -t meu-app-nest .
+```
+
+### 🔗 Logar no Docker Hub
+
+```bash
+docker login
+```
+
+### 🏷️ Taguear a imagem
+
+```bash
+docker tag meu-app-nest seu-usuario-docker/meu-app-nest:latest
+```
+
+### 📤 Subir para o Docker Hub
+
+```bash
+docker push seu-usuario-docker/meu-app-nest:latest
+```
+
+### 🚀 No Render
+
+1. **New Web Service → Deploy an existing image from a registry**
+2. Preencha:
+
+   * **Image URL:** `seu-usuario-docker/meu-app-nest:latest`
+   * **Port:** `3000`
+   * **Start Command:** (deixe em branco se já tem no Dockerfile)
+3. Configure as variáveis de ambiente
+4. Clique em **"Create Web Service"**
+
+---
+
+## 🔐 Payload do Token JWT
+
+O payload do JWT inclui o `tenantId` para identificar o tenant do usuário.
+
+```json
+{
+  "sub": "user-uuid",
+  "email": "user@email.com",
+  "tenantId": "empresa-xpto",
+  "role": "ADMIN",
+  "iat": 123456789
+}
+```
+
+---
+
+## 🧩 Relação entre Tenant, Usuário e Cliente
+
+| Entidade   | O que representa              | Está ligada a quem?             |
+| ---------- | ----------------------------- | ------------------------------- |
+| **Tenant** | Uma empresa que usa o sistema | É o dono dos dados              |
+| **User**   | Um colaborador da empresa     | Pertence a um tenant            |
+| **Client** | Cliente atendido pela empresa | Também pertence ao mesmo tenant |
+
+---
+
+## 📜 Exemplos de Dados
+
+### 🔑 Usuário de Teste
+
+```json
+{
+  "email": "pedro@empresapedro.com",
+  "password": "123456"
+}
+```
+
+### 🔐 Exemplo de Token
+
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "id": "1ffc4f94-e71f-4218-b353-eb4ff5c2b592",
+  "role": "ADMIN"
+}
+```
+
+### 🏢 Exemplo de Cliente
+
+```json
+{
+  "name": "SINKA",
+  "email": "inka@exemplo.com",
+  "isActive": true,
+  "contact": "(56) 91234-5678",
+  "imageUrl": "https://inka.com/inka.jpg",
+  "address": {
+    "street": "Rua inka",
+    "neighborhood": "inka",
+    "number": "41",
+    "state": "BA"
+  }
+}
+```
+
+---
+
+## 🧭 Cronograma Estimado
+
+| Etapa                               | Tempo Estimado |
+| ----------------------------------- | -------------- |
+| 🏁 Setup inicial (Docker, Prisma)   | 0.5 dia        |
+| 🔐 Auth (JWT + Google OAuth2)       | 1.5 dias       |
+| 🛡️ RBAC e Multitenancy              | 1 dia          |
+| 📇 CRUD Usuários e Clientes         | 1.5 dias       |
+| 🖼️ Frontend com Next.js + Tailwind  | 1.5 dias       |
+| 📊 Dashboard (KPIs)                 | 0.5 dia        |
+| 🚢 Dockerização e Deploy            | 1 dia          |
+| 📝 Documentação e testes básicos    | 0.5 dia        |
+
+**Total Estimado:** 7 a 8 dias úteis
+
+---
+
+## 📸 Imagens
+
+![Homepage](/assets/homepage.png)
+![Create Organization](/assets/create-org.png)
+![Login](/assets/login.png)
+![Dashboard](/assets/dashboard.png)
+![Register Customer](/assets/register-costumer.png)
+---
+
+## 📞 Contato
+
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-%230077B5.svg?style=for-the-badge\&logo=linkedin\&logoColor=white)](https://www.linkedin.com/in/opedro-monteiro/)
+[![Email](https://img.shields.io/badge/Email-D14836?style=for-the-badge\&logo=gmail\&logoColor=white)](mailto:pedro.oliveira@monteirodev.com)
