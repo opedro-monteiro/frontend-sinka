@@ -1,6 +1,5 @@
 'use server'
 import { jwtVerify, SignJWT } from 'jose'
-
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { Role } from './type'
@@ -54,6 +53,7 @@ export async function getSession() {
 
     return payload as Session
   } catch (err) {
+    console.error('Error verifying session:', err)
     redirect('/auth/login')
   }
 }

@@ -35,7 +35,31 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { getCostumers } from '@/services/costumers-service'
+import { useEffect, useState } from 'react'
 import { Badge } from '../ui/badge'
+
+export interface CostumerDto {
+  id: string
+  tenantId: string
+  publicId: string
+  name: string
+  email: string
+  isActive: boolean
+  contact: string
+  imageUrl: string
+  address: Address
+  createdAt: string
+  updatedAt: string
+}
+
+export interface Address {
+  id: string
+  street: string
+  neighborhood: string
+  number: string
+  state: string
+}
 
 export const schema = z.object({
   publicId: z.string(),
@@ -44,30 +68,6 @@ export const schema = z.object({
   isActive: z.string(),
   contact: z.string(),
 })
-
-const data: z.infer<typeof schema>[] = [
-  {
-    publicId: 'm5gr84i9',
-    name: 'Ken Smith',
-    email: 'ken99@example.com',
-    isActive: 'true',
-    contact: '+1234567890',
-  },
-  {
-    publicId: '3u1reuv4',
-    name: 'Abe Johnson',
-    email: 'Abe45@example.com',
-    isActive: 'false',
-    contact: '+9876543210',
-  },
-  {
-    publicId: 'derv1ws0',
-    name: 'Monserrat Davis',
-    email: 'Monserrat44@example.com',
-    isActive: 'true',
-    contact: '+1122334455',
-  },
-]
 
 const columnDisplayNames: Record<string, string> = {
   publicId: 'ID Público',
@@ -78,7 +78,7 @@ const columnDisplayNames: Record<string, string> = {
   actions: 'Ações',
 }
 
-export const columns: ColumnDef<z.infer<typeof schema>>[] = [
+export const columns: ColumnDef<CostumerDto>[] = [
   {
     accessorKey: 'publicId',
     header: 'ID',
@@ -130,12 +130,12 @@ export const columns: ColumnDef<z.infer<typeof schema>>[] = [
     cell: ({ row }) => (
       <Badge
         className={`capitalize ${
-          row.getValue('isActive') === 'true'
+          row.getValue('isActive')
             ? 'bg-green-500 hover:bg-green-600'
             : 'bg-red-500 hover:bg-red-600'
         }`}
       >
-        {row.getValue('isActive') === 'true' ? 'Ativo' : 'Inativo'}
+        {row.getValue('isActive') ? 'Ativo' : 'Inativo'}
       </Badge>
     ),
   },
@@ -176,13 +176,20 @@ export const columns: ColumnDef<z.infer<typeof schema>>[] = [
 ]
 
 export function DataTableCostumers() {
-  const [sorting, setSorting] = React.useState<SortingState>([])
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    [],
-  )
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({})
-  const [rowSelection, setRowSelection] = React.useState({})
+  const [data, setData] = useState<CostumerDto[]>([])
+  const [sorting, setSorting] = useState<SortingState>([])
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
+  const [rowSelection, setRowSelection] = useState({})
+
+  useEffect(() => {
+    const fetchCostumers = async () => {
+      const data = await getCostumers()
+      setData(data)
+    }
+
+    fetchCostumers()
+  }, [])
 
   const table = useReactTable({
     data,

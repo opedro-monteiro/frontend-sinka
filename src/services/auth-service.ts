@@ -1,5 +1,4 @@
 import { api } from '@/lib/axios'
-
 import { deleteSession } from '@/lib/session'
 import { redirect, RedirectType } from 'next/navigation'
 
@@ -22,9 +21,6 @@ export type LoginRequest = {
 
 export async function login(data: LoginRequest) {
   const response = await api.post<LoginResponse>('/auth/login', data)
-
-  if (response.status !== 200)
-    throw new Error(response.statusText || 'Erro ao realizar login')
 
   return response.data
 }

@@ -6,6 +6,7 @@ import { OrganizationStep } from '@/components/create-organization/organization-
 import { StepIndicator } from '@/components/create-organization/step-indicator'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { createTenant } from '@/services/organization-service'
 import {
   type OrganizationFormData,
   organizationSchema,
@@ -56,7 +57,7 @@ export default function CreateOrganizationPage() {
       }
       if (!formData.adminPassword.trim()) {
         newErrors.adminPassword = 'Senha é obrigatória'
-      } else if (formData.adminPassword.length < 8) {
+      } else if (formData.adminPassword.length < 6) {
         newErrors.adminPassword = 'Senha deve ter pelo menos 6 caracteres'
       }
     }
@@ -88,7 +89,18 @@ export default function CreateOrganizationPage() {
       setIsLoading(true)
       organizationSchema.parse(formData)
 
-      await new Promise((resolve) => setTimeout(resolve, 2000))
+      const result = await createTenant({
+        name: formData.organizationName,
+        admin: {
+          name: formData.adminName,
+          email: formData.adminEmail,
+          password: formData.adminPassword,
+        },
+      })
+
+      if (!result.id) throw new Error('Erro ao criar organização')
+
+      toast.success('Organização criada com sucesso!')
       router.push('/login?organization=created')
     } catch (error) {
       toast.error(

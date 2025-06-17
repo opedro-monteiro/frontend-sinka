@@ -10,7 +10,6 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
-import GitHubIcon from './icons/github'
 import GoogleIcon from './icons/google'
 import {
   Form,
@@ -35,6 +34,13 @@ export function LoginForm() {
   async function onSubmit(values: LoginFormData) {
     try {
       const result = await login(values)
+      if (!result.accessToken) throw new Error('Erro ao realizar login')
+
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('accessToken', result.accessToken)
+      }
+
+      localStorage.setItem('accessToken', result.accessToken)
 
       await createSession({
         user: {
@@ -111,15 +117,6 @@ export function LoginForm() {
               Ou continue com
             </span>
           </div>
-          <Button type="button" variant="outline" className="w-full">
-            <Link
-              href={`${process.env.NEXT_PUBLIC_BASE_URL}/auth/github/login`}
-              className="flex items-center gap-2"
-            >
-              <GitHubIcon />
-              Entrar com GitHub
-            </Link>
-          </Button>
           <Button type="button" variant="outline" className="w-full" asChild>
             <Link
               href={`${process.env.NEXT_PUBLIC_BASE_URL}/auth/google/login`}

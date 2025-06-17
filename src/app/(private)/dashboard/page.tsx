@@ -1,3 +1,4 @@
+'use client'
 import { AppSidebar } from '@/components/dashboard/app-sidebar'
 import { CostumerBarChart } from '@/components/dashboard/costumer-bar-chart'
 import { CostumerPieChart } from '@/components/dashboard/costumers-pie-chart'
@@ -5,12 +6,28 @@ import { DataTableCostumers } from '@/components/dashboard/data-table'
 import { SectionCards } from '@/components/dashboard/section-cards'
 import { SiteHeader } from '@/components/dashboard/site-header'
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
-import { getSession } from '@/lib/session'
+import { useCostumerChartData } from '@/hooks/dashboard/useCostumerChartData'
+import { getSession, Session } from '@/lib/session'
 import { redirect } from 'next/navigation'
+import { useEffect, useState } from 'react'
+import { toast } from 'sonner'
 
-export default async function DashboardPage() {
-  const session = await getSession()
-  if (!session || !session.user) redirect('/login')
+export default function DashboardPage() {
+  const [session, setSession] = useState<Session | null>(null)
+
+  useEffect(() => {
+    const checkSession = async () => {
+      const session = await getSession()
+      if (!session || !session.user) redirect('/login')
+
+      setSession(session)
+    }
+
+    checkSession()
+  }, [])
+
+  const data = useCostumerChartData()
+  if (data.error) return toast.error('Erro ao buscar clientes')
 
   return (
     <SidebarProvider
@@ -28,18 +45,18 @@ export default async function DashboardPage() {
           <div className="@container/main flex flex-1 flex-col gap-2">
             <div className="mt-2 flex flex-col px-4 lg:px-6">
               <h1>
-                Olá, <strong>{session.user.name}</strong>
+                Olá, <strong>{session?.user.name}</strong>
               </h1>
               <p className="text-muted-foreground">
                 Bem-vindo ao painel de controle da Sinka!
               </p>
             </div>
             <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
-              <SectionCards />
+              <SectionCards data={data} />
               <div className="px-4 lg:px-6">
                 <div className="flex gap-3">
-                  <CostumerBarChart />
-                  <CostumerPieChart />
+                  <CostumerBarChart data={data} />
+                  <CostumerPieChart data={data} />
                 </div>
               </div>
               <h1 className="px-4 text-xl font-semibold md:px-6">

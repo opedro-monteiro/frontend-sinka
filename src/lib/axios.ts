@@ -8,23 +8,21 @@ export const api = axios.create({
   withCredentials: true, // habilitar os cookies
 })
 
-// 🔥 Interceptor para adicionar token
+// Interceptor para adicionar token
 api.interceptors.request.use(
   (config) => {
-    const token =
-      typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null
-
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`
+    if (typeof window !== 'undefined') {
+      const token = localStorage.getItem('accessToken')
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`
+      }
     }
-
     return config
   },
-  (error) => {
-    return Promise.reject(error)
-  },
+  (error) => Promise.reject(error),
 )
 
+// Interceptor para tratar erros
 api.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -32,6 +30,9 @@ api.interceptors.response.use(
       error.response?.data?.message ||
       error.response?.statusText ||
       'Erro desconhecido.'
+
+    console.log('🚨 ERRO NA RESPOSTA', error.response?.status, message)
+    console.log('🚨 ERRO NA REQUISIÇÃO', error.response?.data)
 
     return Promise.reject(new Error(message))
   },
