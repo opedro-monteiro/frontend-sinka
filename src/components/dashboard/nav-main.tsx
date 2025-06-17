@@ -8,6 +8,7 @@ import {
   SidebarMenuItem,
 } from '@/components/ui/sidebar'
 import { IconCirclePlusFilled, type Icon } from '@tabler/icons-react'
+import Link from 'next/link'
 
 export function NavMain({
   items,
@@ -26,9 +27,12 @@ export function NavMain({
             <SidebarMenuButton
               tooltip="Quick Create"
               className="bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground min-w-8 duration-200 ease-linear"
+              asChild
             >
-              <IconCirclePlusFilled />
-              <span>Cadastrar Cliente</span>
+              <Link href="/dashboard/register-costumer">
+                <IconCirclePlusFilled />
+                <span>Cadastrar Cliente</span>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

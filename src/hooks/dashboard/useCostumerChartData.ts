@@ -54,7 +54,7 @@ export const useCostumerChartData = () => {
   }, [])
 
   const getBarChartData = (): ChartDataDto[] => [
-    { tipo: 'Total', value: total, fill: 'var(--chart-1)' },
+    { tipo: 'Total de Clientes', value: total, fill: 'var(--chart-1)' },
     { tipo: 'Ativos', value: ativos, fill: 'var(--chart-2)' },
   ]
 

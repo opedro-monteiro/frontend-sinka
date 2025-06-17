@@ -19,3 +19,12 @@ export interface Address {
   number: string
   state: string
 }
+
+export interface CreateCostumerDto {
+  name: string
+  email: string
+  isActive: boolean
+  contact: string
+  imageUrl: string
+  address: Address
+}

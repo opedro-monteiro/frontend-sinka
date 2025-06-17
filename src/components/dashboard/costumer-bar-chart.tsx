@@ -28,15 +28,15 @@ const chartConfig = {
     label: 'Clientes Ativos',
     color: 'var(--chart-1)',
   },
-} satisfies ChartConfig
+} as ChartConfig
 
 export function CostumerBarChart({ data }: UseCostumerChartDataDto) {
-  const dataCostumer = data.getPieChartData?.() ?? []
+  const dataCostumer = data.getBarChartData?.() ?? []
   const isEmpty = data.total === 0
   return (
     <Card className="flex w-[453px] flex-col">
       <CardHeader>
-        <CardTitle>Clientes Ativos vs Total</CardTitle>
+        <CardTitle>Clientes Totais vs Clientes Ativos</CardTitle>
         <CardDescription>Indicador de engajamento</CardDescription>
       </CardHeader>
       <CardContent className="flex-1">
@@ -56,12 +56,9 @@ export function CostumerBarChart({ data }: UseCostumerChartDataDto) {
                   tickLine={false}
                   tickMargin={10}
                   axisLine={false}
-                  tickFormatter={(value) =>
-                    chartConfig[value as keyof typeof chartConfig]?.label
-                  }
                 />
                 <ChartTooltip
-                  cursor={false}
+                  cursor={true}
                   content={<ChartTooltipContent hideLabel />}
                 />
                 <Bar
